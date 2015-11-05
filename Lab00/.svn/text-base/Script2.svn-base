@@ -1,0 +1,13 @@
+#! /bin/bash
+#$Author$
+#$Date$
+#$Revision$
+#$HeadURL$
+Num_of_Param=$#
+Param_Values=$@
+echo "Script2 $Param_Values"
+for (( I=$1; I >= 0; I-- ))
+do 
+ echo  ${I}
+done
+exit 0

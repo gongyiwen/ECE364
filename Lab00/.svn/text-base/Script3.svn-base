@@ -1,0 +1,16 @@
+#! /bin/bash
+#$Author$
+#$Date$
+#$Revision$
+#$HeadURL$
+Num_of_Param=$#
+Param_Values=$@
+echo "Script3 $Param_Values"
+for (( I=$1; I >= 0; I-- ))
+do 
+if(( I%3 == 0 ))
+then
+ echo  ${I}
+fi
+done
+exit 0
