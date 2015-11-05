@@ -1,0 +1,210 @@
+#! /usr/bin/env python3.4
+__author__ = 'ee364e03'
+
+
+def getUserPermissions():
+    A={}
+    with open('Permissions.txt','r') as myFile:
+        all_lines=myFile.readlines()
+        all_lines=all_lines[2:]
+        for line in all_lines:
+            line=line.split()
+            if A.get(line[0])!=None:  ##id=line[0], contr=line[2]
+                A[line[0]].add(line[2])
+            else:
+                A[line[0]]=set()
+                A[line[0]].add(line[2])
+
+    return A
+
+
+
+
+def getControllerPermissions():
+    B={}
+    with open('Users.txt','r') as myFile1:
+        all_lines=myFile1.readlines()
+        all_lines=all_lines[2:]
+        for line in all_lines:
+            line=line.split()
+            name=line[0]+' '+line[1]
+            id=line[3]
+            B[id]=name
+
+    A={}
+    with open('Permissions.txt','r') as myFile:
+        all_lines=myFile.readlines()
+        all_lines=all_lines[2:]
+        for line in all_lines:
+            line=line.split()
+            id=line[0]
+            contr=line[2]
+            if A.get(contr)!=None:
+                A[contr].add(B.get(id)) #line[0] is ID, line[2] is permission
+            else:
+                A[contr]=set()
+                A[contr].add(B.get(id))
+
+    return A
+
+def getControllerActions():
+    C={}
+    with open('ActivityLog.txt','r') as myFile2:
+        all_lines=myFile2.readlines()
+        for line in all_lines:
+            line=line.split()
+            id=line[0]
+            action=line[2].split("/")[4]
+            contr=line[2].split("/")[3]
+            if C.get(contr) != None:
+                C[contr].add(action)
+            else:
+                C[contr]=set()
+                C[contr].add(action)
+
+    return C
+
+def parseLogFile():
+
+    A={}
+    with open('Permissions.txt','r') as myFile:
+        all_lines=myFile.readlines()
+        all_lines=all_lines[2:]
+        for line in all_lines:
+            line=line.split()
+            id=line[0]
+            contr=line[2]
+            if A.get(id)!=None:  ##id=line[0], contr=line[2]
+                A[id].add(contr)
+            else:
+                A[id]=set()
+                A[id].add(contr)
+    B=[]
+
+    with open('ActivityLog.txt','r') as myFile2:
+        all_lines=myFile2.readlines()
+        for line in all_lines:
+            C=[]
+            line=line.split()
+            id=line[0]
+            url=line[2]
+            contr=line[2].split("/")[3]
+            action=line[2].split("/")[4]
+            if contr in A.get(id):
+                truth = True
+            else:
+                truth=False
+            C=[id,url,contr,action,truth]
+            C=tuple(C)
+            B.append(C)
+    return B
+
+
+def canGrantAccess(userID, url):
+
+    contr1=url.split("/")[3]
+    A=getUserPermissions()
+
+    if userID in A.keys():
+
+        if contr1 in A.get(userID):
+            return True
+        else:
+            return False
+    else:
+        return False
+
+def checkUserActivity(userID):
+    D=[]
+
+    B=parseLogFile()
+
+    A=getUserPermissions()
+
+    if userID in A.keys():
+
+        for line in B:
+            if userID in line:
+                E=[]
+                E.append(line[1])
+                E.append(line[4])
+                E=tuple(E)
+                D.append(E)
+        return D
+    else:
+        D=[]
+        return D
+
+
+
+def getActivityByUser():
+    B={}
+    C={}
+
+    with open('Users.txt','r') as myFile1:
+        all_lines=myFile1.readlines()
+        all_lines=all_lines[2:]
+        for line in all_lines:
+            line=line.split()
+            name=line[0]+' '+line[1] # ID:NAME  first,last,id=line.split()
+            id=line[3]
+            B[id]=name
+    #F=checkUserActivity('amiller')
+    #print(F)
+    for userID in B.keys():
+        E=[]
+        D=checkUserActivity(userID)
+        count1=0
+        count2=0
+        for line in D:
+            #print(line)
+
+
+            if True in line:
+                count1+=1
+            else:
+                count2+=1
+        E=[count1,count2]
+        C[B[userID]]=tuple(E)
+    return C
+
+
+def getActivityByController():
+    A=parseLogFile()
+    B={}
+    for line in A:
+        contr=line[2]
+        truth=line[4]
+        if B.get(contr) != None:
+            if truth == True:
+                C=B.get(contr)
+                D= C[0]
+                E=C[1]
+                D+=1
+                D=[D,E]
+                C=tuple(D)
+                B[contr]=C
+            else:
+                C=B.get(contr)
+                E=C[0]
+                D=C[1]
+                D+=1
+                E=[E,D]
+                C=tuple(E)
+                B[contr]=C
+        else:
+            if truth == True:
+                C=[1,0]
+            else:
+                C=[0,1]
+            B[contr]=tuple(C)
+
+    return B
+
+
+
+
+
+
+if __name__ == '__main__':
+    pass

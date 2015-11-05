@@ -1,0 +1,352 @@
+#! /usr/bin/env python3.4
+import copy
+__author__ = 'ee364e03'
+
+
+
+
+
+class PointND:
+    def __init__(self,*args):
+        self.t=args
+        self.n=len(args)
+        for i in args:
+            if type(i) is not float:
+                raise ValueError #"Cannot instantiate an object with non-float values.\""
+
+    def __str__(self):
+        temp=[]
+        for i in self.t:
+            j=format(i,'.2f')
+            temp.append(j)
+        s=', '.join(str(k) for k in temp)
+        s="("+s+")"
+        return s
+
+    def __hash__(self):
+        return hash(self.t)
+
+    def distanceFrom(self, other):
+        if other.n != self.n:
+            raise ValueError
+        sum=0
+        for i,j in zip(self.t,other.t):
+            sum+=pow((i-j),2)
+        sum=pow(sum,0.5)
+        return sum
+
+    def nearestPoint(self, points):
+        if points == []:
+            raise ValueError
+        sum=0
+        p=PointND(0.0,0.0)
+        smallest=100000000
+        for i in points:
+            for j,k in zip(self.t,i.t):
+                sum+=pow((j-k),2)
+            sum=pow(sum,0.5)
+            if sum<smallest:
+                smallest=sum
+                p=i
+        return p
+
+    def clone(self):
+        s=copy.copy(self)
+        return s
+
+    def __add__(self, other):
+        if type(other) is float:
+             k=[]
+             sum=0.0
+             for i in self.t:
+                sum=other+i
+                k.append(sum)
+             temp=tuple(k)
+             return PointND(*temp)
+
+        elif isinstance(self,PointND) and isinstance(self,PointND):
+             k=[]
+             sum=0.0
+             if other.n != self.n:
+                 raise ValueError
+             else:
+                for i,j in zip(self.t,other.t):
+                    sum=i+j
+                    #sum1=format(sum,'.2f')
+                    #print(sum1)
+                    k.append(sum)
+                temp=tuple(k)
+                print(PointND(*temp))
+                return PointND(*temp)
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self,other):
+        if type(other) is float:
+             sum=0
+             k=[]
+             for i in self.t:
+                sum=i-other
+                k.append(sum)
+             temp=tuple(k)
+             return PointND(*temp)
+        elif isinstance(self,PointND) and isinstance(self,PointND):
+             sum=0
+             k=[]
+             if other.n != self.n:
+                 raise ValueError
+             else:
+                for i,j in zip(self.t,other.t):
+                    sum=i-j
+                    k.append(sum)
+                temp=tuple(k)
+                return PointND(*temp)
+
+    def __mul__(self,other):
+        if type(other) is float:
+             sum=0
+             k=[]
+             for i in self.t:
+                sum=i*other
+                k.append(sum)
+             temp=tuple(k)
+             return PointND(*temp)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self,other):
+
+        if type(other) is float:
+             sum=0
+             k=[]
+             for i in self.t:
+                sum=i/other
+                k.append(sum)
+             temp=tuple(k)
+             return PointND(*temp)
+
+        if type(self) is float:
+             sum=0
+             k=[]
+             for i in other.t:
+                sum=i/self
+                k.append(sum)
+             temp=tuple(k)
+             return PointND(*temp)
+
+    def __neg__(self):
+        sum=0
+        k=[]
+        for i in self.t:
+            sum=-i
+            k.append(sum)
+        temp=tuple(k)
+        return PointND(*temp)
+
+    def __getitem__(self,item):
+        ind=0
+        for i in self.t:
+            if ind == item:
+                return i
+            ind+=1
+
+    def __lt__(self, other): #<
+        if self.n != other.n:
+            raise ValueError
+        origin=self.__mul__(0.0)
+        i=self.distanceFrom(origin)
+        j=other.distanceFrom(origin)
+        if i < j:
+            return True
+        else:
+            return False
+
+    def __gt__(self, other): #>
+        if self.n != other.n:
+            raise ValueError
+        origin=self.__mul__(0.0)
+        i=self.distanceFrom(origin)
+        print(i)
+        j=other.distanceFrom(origin)
+        print(j)
+        if i > j:
+            return True
+        else:
+            return False
+
+    def __ge__(self, other):#>=
+        if self.n != other.n:
+            raise ValueError
+        origin=self.__mul__(0.0)
+
+        i=self.distanceFrom(origin)
+        j=other.distanceFrom(origin)
+        if i >= j:
+            return True
+        else:
+            return False
+
+    def __le__(self, other):#<=
+        if self.n != other.n:
+            raise ValueError
+        origin=self.__mul__(0.0)
+        i=self.distanceFrom(origin)
+        j=other.distanceFrom(origin)
+        if i <= j:
+            return True
+        else:
+            return False
+
+    def __eq__(self, other):#=
+        if other.n != self.n:
+                 raise ValueError
+        else:
+            for i,j in zip(self.t,other.t):
+                if i!=j:
+                    return False
+            return True
+
+    def __ne__(self, other):#!=
+         if other.n != self.n:
+                 raise ValueError
+         else:
+            for i,j in zip(self.t,other.t):
+                if i==j:
+                    return False
+            return True
+
+class Point3D(PointND):
+
+    def __init__(self,x=0.0,y=0.0,z=0.0):
+        if type(x) is not float or type(y) is not float or type(z) is not float:
+            raise ValueError
+        self.x=float(x)
+        self.y=float(y)
+        self.z=float(z)
+        PointND.__init__(self,self.x,self.y,self.z)
+    #def __add__(self, other):
+
+class PointSet:
+    def __init__(self,**kwargs):
+        if not kwargs:
+            self.points=0
+            self.n=0
+        else:
+            if "pointList" in kwargs:
+                pointList=kwargs["pointList"]
+                if not pointList:
+                    raise ValueError
+                else:
+                    self.n=pointList[0].n
+                    self.points=set(pointList)
+                    for i in self.points:
+                        if i.n != self.n:
+                            raise ValueError
+            else:
+                raise KeyError
+
+    def addPoint(self,p):
+        if p.n != self.n:
+            raise ValueError
+        else:
+            self.points.add(p)
+
+    def count(self):
+        return len(self.points)
+
+    def computeBoundingHyperCube(self):
+        max=[]
+        min=[]
+        for i in range(self.n):
+            a=[]
+            for j in self.points:
+                b=j[i]
+                a.append(b)
+            a.sort()
+            print(a)
+            min.append(a[0])
+            max.append(a[self.count()-1])
+        A=tuple(min)
+        B=tuple(max)
+        minpoint=PointND(*A)
+        maxpoint=PointND(*B)
+        c=[]
+        c.append(minpoint)
+        c.append(maxpoint)
+        C=tuple(c)
+        return C
+
+
+    def computeNearestNeighbors(self,otherPointSet):
+        b=[]
+        for i in self.points:
+            j=i.nearestPoint(otherPointSet.points)
+            a=[]
+            a.append(i)
+            a.append(j)
+            A=tuple(a)
+            b.append(A)
+        b.sort()
+        return b
+
+
+    def __add__(self, other):
+        if other.n != self.n:
+            raise ValueError
+        else:
+            self.addPoint(other)
+            return self
+
+    def __sub__(self, other):
+        if other in self.points:
+            self.points.remove(other)
+            return self
+        return self
+
+    def __contains__(self, item):
+        if item in self.points:
+            return True
+        else:
+            return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    pass

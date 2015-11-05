@@ -1,0 +1,17 @@
+#$Author$
+#$Date$
+#$Revision$
+#$HeadURL$
+#$ID$ 
+Num_of_Param=$#
+Param_Values=$@
+X=0
+while (( $# != 0 ))
+do
+  ((X=X+$1))
+  shift
+done
+echo ${X}
+exit 0
+
+

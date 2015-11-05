@@ -1,0 +1,27 @@
+#$Author: ee364e03 $
+#$Date: 2015-08-30 17:45:25 -0400 (Sun, 30 Aug 2015) $
+#$Revision: 80442 $
+#$HeadURL: svn+ssh://ece364sv@ecegrid-thin1/home/ecegrid/a/ece364sv/svn/F15/students/ee364e03/Prelab01/line_num.bash $
+#$ID$ 
+
+Num_of_Param=$#
+Param_Values=$@
+
+if (( $# != 1 ))
+then
+  echo "User should provide a single argument! "
+elif [[ ! -r $1 ]]
+then
+  echo "Cannot Read $1 "
+else
+X=0
+while read line
+do 
+(( X=X+1 ))
+echo "$X:$line"
+done < $1
+fi
+exit 0
+
+
+    
