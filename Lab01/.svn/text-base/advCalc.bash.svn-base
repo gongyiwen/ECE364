@@ -1,0 +1,28 @@
+#$Author$
+#$Date$
+#$Revision$
+#$HeadURL$
+#$ID$ 
+
+Num_of_Param=$#
+Param_Values=$@
+
+if (($# != 1 ))
+then
+echo "Usage: ./advCalc.bash <filename>"
+exit 1
+else
+while read line
+do
+  Y=$(simpleCalc.bash $line)
+  ((X=$?))
+  if (( X == 0 ))
+  then
+  echo "$line: $Y"
+  else
+  echo "$line: Error."
+fi
+done < $1
+fi
+exit 0
+
